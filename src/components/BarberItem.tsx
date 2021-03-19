@@ -1,4 +1,5 @@
 import React from 'react';
+import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 
 import Stars from '../components/Stars';
@@ -6,6 +7,7 @@ import Stars from '../components/Stars';
 type BarberItem = {
   key: number;
   barber: {
+    id: number;
     avatar: string;
     name: string;
     stars: number;
@@ -51,8 +53,19 @@ const SeeProfileButtonText = styled.Text`
 `;
 
 export default (props: BarberItem) => {
+  const navigation = useNavigation();
+
+  const handleClick = () => {
+    navigation.navigate('Barber', {
+      id: props.barber.id,
+      avatar: props.barber.avatar,
+      name: props.barber.name,
+      stars: props.barber.stars,
+    });
+  };
+
   return (
-    <Area>
+    <Area onPress={handleClick}>
       <Avatar source={{uri: props.barber.avatar}} />
       <InfoArea>
         <UserName>{props.barber.name}</UserName>

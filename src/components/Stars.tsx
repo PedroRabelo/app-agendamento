@@ -36,7 +36,7 @@ export default (props: StarsProps) => {
   return (
     <StarArea>
       {s.map((i, k) => (
-        <StarView>
+        <StarView key={k}>
           {i === 0 && <StarEmpty width="18" height="18" fill="#FF9200" />}
           {i === 1 && <StarHalf width="18" height="18" fill="#FF9200" />}
           {i === 2 && <StarFull width="18" height="18" fill="#FF9200" />}
