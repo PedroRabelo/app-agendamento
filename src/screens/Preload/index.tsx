@@ -10,18 +10,19 @@ import {Types} from '../../reducers/UserReducer';
 import {UserContext} from '../../contexts/UserContext';
 
 export default () => {
-  const {dispatch} = useContext(UserContext);
+  const {dispatch: userDispatch} = useContext(UserContext);
   const navigation = useNavigation();
 
   useEffect(() => {
     const checkToken = async () => {
       const token = await AsyncStorage.getItem('token');
+
       if (token !== null) {
         let res = await Api.checkToken(token);
         if (res.token) {
           await AsyncStorage.setItem('token', res.token);
 
-          dispatch({
+          userDispatch({
             type: Types.setAvatar,
             payload: {
               avatar: res.data.avatar,
@@ -39,7 +40,7 @@ export default () => {
       }
     };
     checkToken();
-  });
+  }, []);
 
   return (
     <Container>
