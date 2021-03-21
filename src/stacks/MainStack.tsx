@@ -13,7 +13,21 @@ export type StackParamList = {
     id: number;
     avatar: string;
     name: string;
-    stars: string;
+    stars: number;
+    photos: [{url: string}];
+    services: [
+      {
+        name: string;
+        price: number;
+      },
+    ];
+    testimonials: [
+      {
+        name: string;
+        rate: number;
+        body: string;
+      },
+    ];
   };
 };
 
