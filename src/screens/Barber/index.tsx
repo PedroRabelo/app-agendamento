@@ -4,38 +4,41 @@ import Api from '../../Api';
 import {RootRouteProps} from '../../stacks/MainStack';
 import Swiper from 'react-native-swiper';
 import {
-  Container,
-  Scroller,
-  FakeSwiper,
-  PageBody,
-  UserInfoArea,
-  ServiceArea,
-  TestimonialArea,
-  SwipeDot,
-  SwipeDotActive,
-  SwipeItem,
-  SwipeImage,
-  UserAvatar,
-  UserInfo,
-  UserInfoName,
-  UserFavButton,
   BackButton,
+  Container,
+  FakeSwiper,
   LoadingIcon,
-  ServiceItem,
-  ServicesTitle,
+  PageBody,
+  Scroller,
+  ServiceArea,
+  ServiceChooseBtnText,
+  ServiceChooseButton,
   ServiceInfo,
+  ServiceItem,
   ServiceName,
   ServicePrice,
-  ServiceChooseButton,
-  ServiceChooseBtnText,
-  TestimonialItem,
-  TestimonialInfo,
-  TestimonialName,
+  ServicesTitle,
+  SwipeDot,
+  SwipeDotActive,
+  SwipeImage,
+  SwipeItem,
+  TestimonialArea,
   TestimonialBody,
+  TestimonialInfo,
+  TestimonialItem,
+  TestimonialName,
+  UserAvatar,
+  UserFavButton,
+  UserInfo,
+  UserInfoArea,
+  UserInfoName,
 } from './styles';
 
 import Stars from '../../components/Stars';
+import BarberModal from '../../components/BarberModal';
+
 import FavoriteIcon from '../../assets/favorite.svg';
+import FavoriteFullIcon from '../../assets/favorite_full.svg';
 import BackIcon from '../../assets/back.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import NavNextIcon from '../../assets/nav_next.svg';
@@ -51,16 +54,21 @@ export default () => {
     stars: route.params.stars,
     photos: route.params.photos,
     services: route.params.services,
+    available: route.params.available,
     testimonials: route.params.testimonials,
   });
 
   const [loading, setLoading] = useState(false);
+  const [favorited, setFavorited] = useState(false);
+  const [selectedService, setSelectedService] = useState(-1);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const getBarberInfo = async () => {
       let json = await Api.getBarber(userInfo.id);
       if (json.error === '') {
         setUserInfo(json.data);
+        setFavorited(json.data.favorited);
       } else {
         alert('Error: ' + json.error);
       }
@@ -68,10 +76,20 @@ export default () => {
       setLoading(false);
     };
     getBarberInfo();
-  }, [userInfo.id]);
+  }, [userInfo]);
 
   const handleBackButton = () => {
     navigation.goBack();
+  };
+
+  const handleFavClick = () => {
+    setFavorited(!favorited);
+    Api.setFavorite(userInfo.id);
+  };
+
+  const handleServiceChoose = (key: number) => {
+    setSelectedService(key);
+    setShowModal(true);
   };
 
   return (
@@ -100,8 +118,12 @@ export default () => {
               <UserInfoName>{userInfo.name}</UserInfoName>
               <Stars stars={userInfo.stars} showNumber />
             </UserInfo>
-            <UserFavButton>
-              <FavoriteIcon width="24" height="24" fill="#ff0000" />
+            <UserFavButton onPress={handleFavClick}>
+              {favorited ? (
+                <FavoriteFullIcon width="24" height="24" fill="#ff0000" />
+              ) : (
+                <FavoriteIcon width="24" height="24" fill="#ff0000" />
+              )}
             </UserFavButton>
           </UserInfoArea>
 
@@ -115,9 +137,9 @@ export default () => {
                 <ServiceItem key={key}>
                   <ServiceInfo>
                     <ServiceName>{item.name}</ServiceName>
-                    <ServicePrice>R$ {item.price}</ServicePrice>
+                    <ServicePrice>R$ {item.price.toFixed(2)}</ServicePrice>
                   </ServiceInfo>
-                  <ServiceChooseButton>
+                  <ServiceChooseButton onPress={() => handleServiceChoose(key)}>
                     <ServiceChooseBtnText>Agendar</ServiceChooseBtnText>
                   </ServiceChooseButton>
                 </ServiceItem>
@@ -154,6 +176,13 @@ export default () => {
       <BackButton onPress={handleBackButton}>
         <BackIcon width="44" height="44" fill="#ffffff" />
       </BackButton>
+
+      <BarberModal
+        show={showModal}
+        setShow={setShowModal}
+        user={userInfo}
+        service={selectedService}
+      />
     </Container>
   );
 };

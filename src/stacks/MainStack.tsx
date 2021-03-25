@@ -15,10 +15,16 @@ export type StackParamList = {
     name: string;
     stars: number;
     photos: [{url: string}];
+    favorited: boolean;
     services: [
       {
         name: string;
         price: number;
+      },
+    ];
+    available: [
+      {
+        date: string;
       },
     ];
     testimonials: [
